@@ -40,6 +40,7 @@ export const setSelectedCinema = (cinema) => ({
 export const find_showtime_for_booking = (date, movieId, cinemaId) => async (
   dispatch
 ) => {
+  
   const tempDate = moment(date).startOf("day")._d;
   dispatch({
     type: SET_SELECTED_DATE,
@@ -51,6 +52,7 @@ export const find_showtime_for_booking = (date, movieId, cinemaId) => async (
     cinemaId: cinemaId,
   };
   try {
+    dispatch({type:"SHOW_LOADING"})
     const url = BASE_URL + "reservations/find-showtime";
     const response = await fetch(url, {
       method: "POST",
@@ -62,6 +64,7 @@ export const find_showtime_for_booking = (date, movieId, cinemaId) => async (
     const showtimes = await response.json();
     if (response.ok) {
       dispatch({ type: FIND_SHOWTIME, payload: showtimes });
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setSelectedTime(""));
     }
   } catch (error) {
@@ -81,6 +84,7 @@ export const showInvitationForm = () => ({ type: SHOW_INVITATION_FORM });
 export const resetCheckout = () => ({ type: RESET_CHECKOUT });
 
 export const find_reservations = (data) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "reservations/find-reservations";
     const response = await fetch(url, {
@@ -92,13 +96,16 @@ export const find_reservations = (data) => async (dispatch) => {
     });
     const reservations = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: SET_LIST_RESERVATIONS, payload: reservations });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert("error", "error", 5000));
   }
 };
 export const Find_cinema_booking = (movieId) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "reservations/find-cinema/" + movieId;
     const response = await fetch(url, {
@@ -109,13 +116,16 @@ export const Find_cinema_booking = (movieId) => async (dispatch) => {
     });
     const cinemas = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: SET_LIST_CINEMA_FOLLOW_MOVIE_ID, payload: cinemas });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert("error", "error", 5000));
   }
 };
 export const Find_promotion = (code) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "promotions/find-promotion";
     const response = await fetch(url, {
@@ -127,9 +137,11 @@ export const Find_promotion = (code) => async (dispatch) => {
     });
     const promotions = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: SET_PROMOTION, payload: promotions });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert("error", "error", 5000));
   }
 };
@@ -163,6 +175,7 @@ export const mailConfirm = (currentReservation) => async (dispatch) => {
   }
 };
 export const Make_reservation = (reservation, movieId) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "reservations/create";
     const response = await fetch(url, {
@@ -174,6 +187,7 @@ export const Make_reservation = (reservation, movieId) => async (dispatch) => {
     });
     const res = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       const checkoutState = store.getState().checkoutState;
       const data = {
         startAt: checkoutState.selectedTime,
@@ -186,6 +200,7 @@ export const Make_reservation = (reservation, movieId) => async (dispatch) => {
       dispatch(setAlert("Success", "success", 3000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert("error", "error", 3000));
   }
 };

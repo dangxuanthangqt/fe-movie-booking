@@ -3,6 +3,7 @@ import { GET_ALL_PROMOTION, SELECT_PROMOTION } from "../types/promotion";
 import { setAlert } from "./alert";
 
 export const uploadPromotionImage = (id, image) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const data = new FormData();
     data.append("file", image);
@@ -13,6 +14,7 @@ export const uploadPromotionImage = (id, image) => async (dispatch) => {
     });
     const responseData = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Prmotion Uploaded", "success", 5000));
       dispatch(getPromotions());
     }
@@ -20,10 +22,12 @@ export const uploadPromotionImage = (id, image) => async (dispatch) => {
       dispatch(setAlert(responseData.error.message, "error", 5000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };
 export const getPromotions = () => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "promotions";
     const response = await fetch(url, {
@@ -32,9 +36,11 @@ export const getPromotions = () => async (dispatch) => {
     });
     const promotions = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: GET_ALL_PROMOTION, payload: promotions });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 2000));
   }
 };

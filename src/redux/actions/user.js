@@ -8,6 +8,7 @@ import {
 import { setAlert } from "./alert";
 
 export const updateUser = (user, id) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = BASE_URL + "users/" + id;
@@ -22,6 +23,7 @@ export const updateUser = (user, id) => async (dispatch) => {
     const data = await response.json();
     const newUser = data.user;
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("User Updated", "success", 5000));
       // dispatch({ type: UPDATE_USER, payload: newUser });
       dispatch(getUsers());
@@ -29,10 +31,12 @@ export const updateUser = (user, id) => async (dispatch) => {
 
       return { status: "success", message: "User Updated" };
     } else {
+      dispatch({type:"HIDE_LOADING"})
       throw new Error(data._message);
     }
   } catch (error) {
     dispatch(setAlert(error.message, "error", 5000));
+    dispatch({type:"HIDE_LOADING"})
     return {
       status: "error",
       message: " User have not been saved, try again.",
@@ -41,6 +45,7 @@ export const updateUser = (user, id) => async (dispatch) => {
 };
 
 export const deleteUser = (id) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = BASE_URL + "users/" + id;
@@ -53,6 +58,7 @@ export const deleteUser = (id) => async (dispatch) => {
     });
     const data = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("User Deleted", "success", 5000));
       //dispatch({ type: DELETE_USER, payload: id });
       dispatch(getUsers());
@@ -61,6 +67,7 @@ export const deleteUser = (id) => async (dispatch) => {
       throw new Error(data._message);
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
     return {
       status: "error",
@@ -75,6 +82,7 @@ export const onSelectUser = (data) => {
   };
 };
 export const getUsers = () => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = BASE_URL + "users";
@@ -86,9 +94,11 @@ export const getUsers = () => async (dispatch) => {
     });
     const users = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: GET_USERS, payload: users });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };

@@ -12,6 +12,7 @@ import checkout from "./checkout";
 import reservation from "./reservation";
 import contact from "./contact";
 import contactAdmin from "./contactAdmin";
+import loading from "./globalLoading";
 export default combineReducers({
   alertState: alert,
   movieState: movies,
@@ -25,4 +26,5 @@ export default combineReducers({
   reservationState: reservation,
   contactState: contact,
   contactAdminState: contactAdmin,
+  loadingState: loading,
 });

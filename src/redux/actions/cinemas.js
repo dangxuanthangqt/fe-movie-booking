@@ -3,6 +3,7 @@ import { GET_CINEMA, GET_CINEMAS, SELECT_CINEMA } from "../types/cinemas";
 import { setAlert } from "./alert";
 
 export const uploadCinemaImage = (id, image) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const data = new FormData();
     data.append("file", image);
@@ -13,6 +14,7 @@ export const uploadCinemaImage = (id, image) => async (dispatch) => {
     });
     const responseData = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Image Uploaded", "success", 5000));
       dispatch(getCinemas());
     }
@@ -20,11 +22,13 @@ export const uploadCinemaImage = (id, image) => async (dispatch) => {
       dispatch(setAlert(responseData.error.message, "error", 5000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };
 
 export const getCinemas = () => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "cinemas";
     const response = await fetch(url, {
@@ -33,9 +37,11 @@ export const getCinemas = () => async (dispatch) => {
     });
     const cinemas = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: GET_CINEMAS, payload: cinemas });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };
@@ -57,6 +63,7 @@ export const getCinema = (id) => async (dispatch) => {
 };
 
 export const createCinemas = (image, newCinema) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = BASE_URL + "cinemas";
@@ -70,12 +77,14 @@ export const createCinemas = (image, newCinema) => async (dispatch) => {
     });
     const cinema = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Cinema Created", "success", 5000));
       if (image) dispatch(uploadCinemaImage(cinema._id, image));
       dispatch(getCinemas());
       return { status: "success", message: "Cinema Created" };
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
     return {
       status: "error",
@@ -85,6 +94,7 @@ export const createCinemas = (image, newCinema) => async (dispatch) => {
 };
 
 export const updateCinemas = (image, cinema, id) => async (dispatch) => {
+  dispatch({type:"HIDE_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = BASE_URL + "cinemas/" + id;
@@ -97,6 +107,7 @@ export const updateCinemas = (image, cinema, id) => async (dispatch) => {
       body: JSON.stringify(cinema),
     });
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Cinema Updated", "success", 5000));
       if (image) dispatch(uploadCinemaImage(id, image));
       dispatch(onSelectCinema(null));
@@ -104,6 +115,7 @@ export const updateCinemas = (image, cinema, id) => async (dispatch) => {
       return { status: "success", message: "Cinema Updated" };
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
     return {
       status: "error",
@@ -144,6 +156,7 @@ export const onSelectCinema = (data) => {
   };
 };
 export const searchFullTextCinema = (value) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = BASE_URL + "cinemas/search-full/" + value;
     const response = await fetch(url, {
@@ -154,9 +167,12 @@ export const searchFullTextCinema = (value) => async (dispatch) => {
     });
     const movies = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: GET_CINEMAS, payload: movies });
+
     }
   } catch {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert("error", "error", 2000));
   }
 };

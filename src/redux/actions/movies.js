@@ -8,6 +8,7 @@ export const onSelectMovie = (movie) => ({
 });
 
 export const getMovie = (id) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = baseUrl + "/movies/" + id;
     const response = await fetch(url, {
@@ -16,14 +17,17 @@ export const getMovie = (id) => async (dispatch) => {
     });
     const movie = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: SELECT_MOVIE, payload: movie });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };
 
 export const uploadMovieImage = (id, image) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const data = new FormData();
     data.append("file", image);
@@ -34,6 +38,7 @@ export const uploadMovieImage = (id, image) => async (dispatch) => {
     });
     const responseData = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Image Uploaded", "success", 5000));
       dispatch(getMovies());
     }
@@ -41,10 +46,12 @@ export const uploadMovieImage = (id, image) => async (dispatch) => {
       dispatch(setAlert(responseData.error.message, "error", 5000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };
 export const addMovie = (image, newMovie) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = baseUrl + "/movies";
@@ -58,15 +65,18 @@ export const addMovie = (image, newMovie) => async (dispatch) => {
     });
     const movie = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Movie have been saved!", "success", 2000));
       if (image) dispatch(uploadMovieImage(movie._id, image));
       dispatch(getMovies());
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 2000));
   }
 };
 export const getMovies = () => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = baseUrl + "/movies";
     const response = await fetch(url, {
@@ -75,14 +85,17 @@ export const getMovies = () => async (dispatch) => {
     });
     const movies = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: GET_MOVIES, payload: movies });
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 2000));
   }
 };
 
 export const updateMovie = (movieId, movie, image) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = baseUrl + "/movies/" + movieId;
@@ -95,12 +108,14 @@ export const updateMovie = (movieId, movie, image) => async (dispatch) => {
       body: JSON.stringify(movie),
     });
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(onSelectMovie(null));
       dispatch(setAlert("Movie have been saved!", "success", 2000));
       if (image) dispatch(uploadMovieImage(movieId, image));
       dispatch(getMovies());
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 2000));
   }
 };
@@ -122,6 +137,7 @@ export const getMovieSuggestion = (id) => async (dispatch) => {
 };
 
 export const removeMovie = (movieId) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const token = localStorage.getItem("jwtToken");
     const url = baseUrl + "/movies/" + movieId;
@@ -133,15 +149,18 @@ export const removeMovie = (movieId) => async (dispatch) => {
       },
     });
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(getMovies());
       dispatch(onSelectMovie(null));
       dispatch(setAlert("Movie have been Deleted!", "success", 2000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 2000));
   }
 };
 export const searchFullTextMovie = (value) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = baseUrl + "/movies/search-full/" + value;
     const response = await fetch(url, {
@@ -152,9 +171,11 @@ export const searchFullTextMovie = (value) => async (dispatch) => {
     });
     const movies = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: GET_MOVIES, payload: movies });
     }
   } catch {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert("error", "error", 2000));
   }
 };

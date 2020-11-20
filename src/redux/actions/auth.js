@@ -19,12 +19,14 @@ export const uploadImage = (id, image) => async (dispatch) => {
     });
     const responseData = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch(setAlert("Image Uploaded", "success", 5000));
     }
     if (responseData.error) {
       dispatch(setAlert(responseData.error.message, "error", 5000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch(setAlert(error.message, "error", 5000));
   }
 };
@@ -39,6 +41,7 @@ export const registerUser = ({
   password,
 }) => async (dispatch) => {
   try {
+    dispatch({type:"SHOW_LOADING"})
     const url = baseUrl + "/users";
     const body = { name, username, email, phone, password };
     const response = await fetch(url, {
@@ -48,12 +51,14 @@ export const registerUser = ({
     });
     const responseData = await response.json();
     if (response.status === 400) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: REGISTER_FAIL });
       dispatch(
         setAlert(responseData.keyValue.phone + " was exist!", "error", 5000)
       );
     }
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       const { user } = responseData;
       user && setUser(user);
       if (image) dispatch(uploadImage(user._id, image)); // Upload image
@@ -61,10 +66,12 @@ export const registerUser = ({
       dispatch(setAlert("Register Success", "success", 5000));
     }
     if (responseData._message) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: REGISTER_FAIL });
       dispatch(setAlert(responseData.message, "error", 5000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch({ type: REGISTER_FAIL });
     dispatch(setAlert(error.message, "error", 5000));
   }
@@ -72,6 +79,7 @@ export const registerUser = ({
 
 // Login user
 export const login = ({ username, password }) => async (dispatch) => {
+  dispatch({type:"SHOW_LOADING"})
   try {
     const url = baseUrl + "/users/login";
     const response = await fetch(url, {
@@ -81,16 +89,19 @@ export const login = ({ username, password }) => async (dispatch) => {
     });
     const responseData = await response.json();
     if (response.ok) {
+      dispatch({type:"HIDE_LOADING"})
       const { user } = responseData;
       user && setUser(user);
       dispatch({ type: LOGIN_SUCCESS, payload: responseData });
       dispatch(setAlert(`Welcome ${user.name}`, "success", 5000));
     }
     if (responseData.error) {
+      dispatch({type:"HIDE_LOADING"})
       dispatch({ type: LOGIN_FAIL });
       dispatch(setAlert(responseData.error.message, "error", 5000));
     }
   } catch (error) {
+    dispatch({type:"HIDE_LOADING"})
     dispatch({ type: LOGIN_FAIL });
     dispatch(setAlert(error.message, "error", 5000));
   }
