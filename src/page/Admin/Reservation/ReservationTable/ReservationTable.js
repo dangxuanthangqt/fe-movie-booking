@@ -122,6 +122,8 @@ function ReservationTable(props) {
           search: true,
         }}
       ></MaterialTable>
+    
+    
     </div>
   );
 }

@@ -1,20 +1,13 @@
-import React, { useState } from "react";
-import PropTypes from "prop-types";
-import classNames from "classnames";
 import { withStyles } from "@material-ui/core";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TablePagination,
-} from "@material-ui/core";
+import classNames from "classnames";
+import PropTypes from "prop-types";
+import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import Portlet from "../../../../components/Portlet/Portlet";
 import PortletContent from "../../../../components/PortletContent/PortletContent";
 import styles from "./styles";
-
+import moment from "moment";
+import MaterialTable from "material-table";
 const ReservationsTable = ({ classes, className, reservations }) => {
   const { t, i18n } = useTranslation();
   const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -28,67 +21,71 @@ const ReservationsTable = ({ classes, className, reservations }) => {
     setRowsPerPage(event.target.value);
   };
   const rootClassName = classNames(classes.root, className);
-
+  const handleData = () => {
+    if (reservations.length) {
+      let temp = reservations.map((reservation, index) => {
+        return {
+          ...reservation,
+          username: reservation.userId.username,
+          moviename: reservation.movieId.title,
+          cinemaname: reservation.cinemaId.name,
+          status: reservation.status,
+          date: moment(reservation.date).format("DD-MM-YYYY"),
+          seats: JSON.stringify(reservation.seats),
+        };
+      });
+      return temp;
+    }
+  };
   return (
     <Portlet className={rootClassName}>
       <PortletContent noPadding>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell align="left">{t("dashboard.movie")}</TableCell>
-              <TableCell align="left">{t("dashboard.cinema")}</TableCell>
-              <TableCell align="left">{t("dashboard.date")}</TableCell>
-              <TableCell align="left">{t("dashboard.startAt")}</TableCell>
-              <TableCell align="left">{t("dashboard.method")}</TableCell>
-              <TableCell align="left">{t("dashboard.total")}</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {reservations
-              .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((reservation) => (
-                <TableRow
-                  className={classes.tableRow}
-                  hover
-                  key={reservation._id}
-                >
-                  <TableCell className={classes.tableCell}>
-                    {reservation.movieId.title}
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>
-                    {reservation.cinemaId.name}
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>
-                    {new Date(reservation.date).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>
-                    {reservation.startAt}
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>
-                    {reservation.paymentMethod}
-                  </TableCell>
-                  <TableCell className={classes.tableCell}>
-                    {reservation.total}$
-                  </TableCell>
-                </TableRow>
-              ))}
-          </TableBody>
-        </Table>
-        <TablePagination
-          backIconButtonProps={{
-            "aria-label": "Previous Page",
+        <MaterialTable
+          title={"My reservations"}
+          columns={[
+            {
+              title: `${t("admin.reservation.name")}`,
+              field: "username",
+            },
+            {
+              title: `${t("admin.reservation.movie")}`,
+              field: "moviename",
+            },
+            {
+              title: `${t("admin.reservation.cinema")}`,
+              field: "cinemaname",
+            },
+            {
+              title: `${t("admin.reservation.status")}`,
+              field: "status",
+            },
+            {
+              title: `${t("admin.reservation.paymentmethod")}`,
+              field: "paymentMethod",
+            },
+            {
+              title: `${t("admin.reservation.date")}`,
+              field: "date",
+            },
+            {
+              title: `${t("admin.reservation.time")}`,
+              field: "startAt",
+            },
+            {
+              title: `${t("admin.reservation.total")}`,
+              field: "total",
+            },
+            {
+              title: `${t("admin.reservation.seats")}`,
+              field: "seats",
+            },
+          ]}
+          data={handleData()}
+          options={{
+            actionsColumnIndex: -1,
+            search: true,
           }}
-          component="div"
-          count={reservations.length}
-          nextIconButtonProps={{
-            "aria-label": "Next Page",
-          }}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-          page={page}
-          rowsPerPage={rowsPerPage}
-          rowsPerPageOptions={[5, 10, 25]}
-        />
+        ></MaterialTable>
       </PortletContent>
     </Portlet>
   );
