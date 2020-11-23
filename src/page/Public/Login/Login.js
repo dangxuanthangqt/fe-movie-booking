@@ -18,7 +18,7 @@ const Login = ({ history, classes, location }) => {
             <IconButton
               className={classes.backButton}
               onClick={() => {
-                history.goBack();
+                history.push("/");
               }}
             >
               <ArrowBackIcon />
