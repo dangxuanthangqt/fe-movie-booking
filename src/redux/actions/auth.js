@@ -60,7 +60,7 @@ export const registerUser = ({
     if (response.ok) {
       dispatch({type:"HIDE_LOADING"})
       const { user } = responseData;
-      user && setUser(user);
+      user && setUser(user); // set user vao  localstorage
       if (image) dispatch(uploadImage(user._id, image)); // Upload image
       dispatch({ type: REGISTER_SUCCESS, payload: responseData });
       dispatch(setAlert("Register Success", "success", 5000));

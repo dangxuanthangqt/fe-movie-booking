@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, Redirect } from "react-router-dom";
 
 import Loading from "./components/Loading/Loading";
 import PublicLayout from "./layouts/PublicLayout/PublicLayout";
@@ -9,6 +9,7 @@ import ProtectedRoute from "./routers/ProtectedRoute";
 import ProtectedUserRoute from "./routers/ProtectedUserRoute";
 import WithLayoutRoute from "./routers/WithLayoutRoute";
 import AuthRoute from "./routers/AuthRoute";
+import Error404 from "./page/Public/Error404/Error404";
 
 const Login = lazy(() => import("./page/Public/Login/Login"));
 const Register = lazy(() => import("./page/Public/Register/Register"));
@@ -152,6 +153,15 @@ const Routes = () => {
             layout={AdminLayout}
             component={ContactList}
           ></ProtectedRoute>
+          <Route
+            path="/errors/error404"
+            render={() => <Error404></Error404>}
+          ></Route>
+          <Route
+            path="*"
+            render={() => <Redirect to="/errors/error404"></Redirect>}
+          ></Route>
+       
         </Switch>
       </Router>
     </Suspense>
